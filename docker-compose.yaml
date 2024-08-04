@@ -1,0 +1,22 @@
+version: 'latest'
+
+services:
+  web:
+    container_name: 'web'
+    image: 'web'
+    build:
+      context: ./multi_shop
+      dockerfile: Dockerfile
+
+    restart: always
+    volumes:
+      - ./multi_shop:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - 'DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}'
+      - 'DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL}'
+      - 'DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}'
+
+    command: >
+      sh -c "bash scripts.sh"
