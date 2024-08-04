@@ -1,6 +1,19 @@
 version: 'latest'
 
 services:
+  redis:
+    container_name: 'redis'
+    image: 'redis'
+    restart: always
+
+  rabbitmq:
+     container_name: 'rabbitmq'
+     image: 'rabbitmq:management'
+     restart: always
+     ports:
+       - '5672:5672'
+       - '15672:15672'
+
   db:
     container_name: 'db'
     image: 'postgres'
@@ -43,7 +56,26 @@ services:
 
     depends_on:
       - db
-      
+
+
+
+  celery:
+    container_name: 'celery'
+    image: 'celery'
+    build:
+      context: ./multi_shop
+      dockerfile: Dockerfile
+
+    restart: always
+    volumes:
+      - ./multi_shop:/app
+    command: >
+      sh -c "celery -A config worker -l INFO -Q tasks,dead_letter"
+
+    depends_on:
+      - redis
+      - rabbitmq
+      - web
 
 
 volumes:
