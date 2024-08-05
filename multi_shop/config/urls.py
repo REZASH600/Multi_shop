@@ -1,13 +1,13 @@
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.conf import settings
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
 
-from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView,SpectacularAPIView
+from drf_spectacular.views import SpectacularRedocView, SpectacularSwaggerView, SpectacularAPIView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -18,7 +18,7 @@ urlpatterns = [
     path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 
-
+    path('', include('apps.account.api.urls'))
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
