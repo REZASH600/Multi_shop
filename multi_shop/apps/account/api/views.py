@@ -4,6 +4,7 @@ from .serializers import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAdminUser
+from .pagination import StandardResultsSetPagination
 
 
 class UserView(ModelViewSet):
@@ -12,3 +13,4 @@ class UserView(ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     parser_classes = (MultiPartParser,)
     permission_classes = (IsAdminUser,)
+    pagination_class = StandardResultsSetPagination
