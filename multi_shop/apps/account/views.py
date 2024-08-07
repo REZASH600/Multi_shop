@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 
 from django.views import View
 from . import forms
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 
 
@@ -36,3 +36,9 @@ class LoginView(View):
 
         messages.error(request, message)
         return render(request, 'account/login.html', {'form': form})
+
+
+class LogoutView(View):
+    def post(self, request):
+        logout(request)
+        return redirect('/')
