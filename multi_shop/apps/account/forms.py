@@ -3,6 +3,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from . import models
+from django.contrib.auth import authenticate
 
 
 class UserCreationForm(forms.ModelForm):
@@ -41,3 +42,21 @@ class UserChangeForm(forms.ModelForm):
     class Meta:
         model = models.User
         fields = ["email", "password", "image", "is_active", "is_admin"]
+
+
+class LoginForm(forms.Form):
+    username = forms.CharField(max_length=255, widget=forms.TextInput({'placeholder': 'phone or email'}))
+    password = forms.CharField(widget=forms.PasswordInput({'placeholder': 'password'}))
+    remember_me = forms.BooleanField(required=False)
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if '@' in username:
+            if username[-10:] != '@gmail.com':
+                raise ValidationError('Please enter the correct email')
+
+        else:
+            if not username.isdigit() or len(username) != 11:
+                raise ValidationError('Please enter the correct phone')
+
+        return username
