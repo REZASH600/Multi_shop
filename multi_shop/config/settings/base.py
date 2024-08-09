@@ -130,6 +130,7 @@ MEDIA_ROOT = path.join(BASE_DIR.parent, 'volumes', 'media')
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "account.User"
+AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend", 'apps.account.authentication.EmailAuthentication']
 # Celery settings
 CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'amqp://guest:guest@rabbitmq:5672/')
 CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
