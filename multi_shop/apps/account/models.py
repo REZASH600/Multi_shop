@@ -91,3 +91,11 @@ class User(AbstractBaseUser):
     class Meta:
         verbose_name = _('User')
         verbose_name_plural = _('Users')
+
+
+class Otp(models.Model):
+    phone = models.CharField(verbose_name=_('phone'), max_length=11)
+    random_code = models.CharField(verbose_name=_('random code'), max_length=5)
+    token = models.CharField(verbose_name=_('token'), max_length=255)
+    created_at = models.DateTimeField(verbose_name=_('created at'), auto_now=True)
+

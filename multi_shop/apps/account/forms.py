@@ -60,3 +60,14 @@ class LoginForm(forms.Form):
                 raise ValidationError('Please enter the correct phone')
 
         return username
+
+
+class RegisterForm(forms.Form):
+    phone = forms.CharField(max_length=11, widget=forms.TextInput({'placeholder': 'phone'}))
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone is None or len(phone) != 11 or not phone.isdigit():
+            raise ValidationError('Please enter the correct phone')
+
+        return phone
