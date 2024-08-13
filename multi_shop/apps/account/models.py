@@ -1,3 +1,7 @@
+from datetime import timedelta
+
+from django.utils import timezone
+
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils.html import format_html
@@ -94,8 +98,29 @@ class User(AbstractBaseUser):
 
 
 class Otp(models.Model):
-    phone = models.CharField(verbose_name=_('phone'), max_length=11)
-    random_code = models.CharField(verbose_name=_('random code'), max_length=5)
-    token = models.CharField(verbose_name=_('token'), max_length=255)
-    created_at = models.DateTimeField(verbose_name=_('created at'), auto_now=True)
+    phone = models.CharField(_('phone'), max_length=11)
+    random_code = models.CharField(_('random code'), max_length=5)
+    token = models.CharField(_('token'), max_length=255)
+    created_at = models.DateTimeField(_('created at'), auto_now=True)
 
+    class Meta:
+        verbose_name = _('One Time Password')
+        verbose_name_plural = _('One Time Passwords')
+
+
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('user'))
+    token = models.CharField(verbose_name=_('token'), max_length=64, unique=True)
+    created_at = models.DateTimeField(verbose_name=_('created at'), auto_now=True)
+    expires_at = models.DateTimeField(verbose_name=_('expires at'))
+
+    def is_valid(self):
+        """
+        Check if the token is still valid based on its expiration date.
+        """
+        return timezone.now() < self.expires_at
+
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(minutes=15)
+        super().save(*args, **kwargs)

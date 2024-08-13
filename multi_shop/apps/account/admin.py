@@ -43,3 +43,4 @@ admin.site.register(models.User, UserAdmin)
 # unregister the Group model from admin.
 admin.site.unregister(Group)
 admin.site.register(models.Otp)
+admin.site.register(models.PasswordResetToken)

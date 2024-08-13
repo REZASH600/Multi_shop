@@ -67,7 +67,20 @@ class RegisterForm(forms.Form):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
-        if phone is None or len(phone) != 11 or not phone.isdigit():
+        if len(phone) != 11 or not phone.isdigit():
             raise ValidationError('Please enter the correct phone')
 
         return phone
+
+
+class CheckOtpForm(forms.Form):
+    random_code = forms.CharField(max_length=5, widget=forms.TextInput({'placeholder': 'code'}))
+
+    def clean_random_code(self):
+        code = self.cleaned_data.get('random_code')
+        if len(code) != 5 or not code.isdigit():
+            raise ValidationError('Please enter the correct code')
+        return code
+
+
+
