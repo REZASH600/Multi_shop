@@ -103,3 +103,13 @@ class ForgotPasswordForm(forms.Form):
                 raise ValidationError('phone not found.')
 
 
+class ResetPasswordForm(forms.Form):
+    password1 = forms.CharField(widget=forms.PasswordInput({'placeholder': 'new password'}))
+    password2 = forms.CharField(widget=forms.PasswordInput({'placeholder': 'confirm password'}))
+
+    def clean(self):
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+
+        if password1 and password2 != password1:
+            raise ValidationError('passwords must match')

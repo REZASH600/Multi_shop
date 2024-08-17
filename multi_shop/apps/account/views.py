@@ -11,7 +11,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib import messages
 from . import models
 from django.conf import settings
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 
 
 class LoginView(View):
@@ -127,11 +127,16 @@ class CheckOtpView(View):
                 models.PasswordResetToken.objects.update_or_create(
                     user=user,
                     defaults={'token': new_token},
-                    create_defaults={'token': new_token, user: user}
+                    create_defaults={'token': new_token, 'user': user}
                 )
+
                 request.session['token'] = new_token
                 otp.delete()
-                return JsonResponse({'response': 'Success', 'redirect_url': '/'}, status=200)
+
+                return JsonResponse(
+                    {'response': 'Success',
+                     'redirect_url': reverse('account_app:reset_password', kwargs={'token': new_token})},
+                    status=200)
 
             user, _ = models.User.objects.get_or_create(phone=otp.phone)
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -198,6 +203,8 @@ class ForgotPasswordView(View):
                 )
                 request.session['token'] = new_token
                 # send link to user email
+                print(reverse('account_app:reset_password', kwargs={'token': new_token}))
+
                 return redirect('/')
             else:
                 random_code = random.randint(10000, 99999)
@@ -215,3 +222,37 @@ class ForgotPasswordView(View):
                 return redirect('account_app:check_otp')
 
         return render(request, 'account/forgot-password.html', {'form': form})
+
+
+class ResetPasswordView(View):
+    def get(self, request, token):
+        if self.request.user.is_authenticated:
+            return redirect('/')
+        try:
+            obj_token = models.PasswordResetToken.objects.get(token=token)
+            if obj_token.is_valid():
+                raise Http404('timeout')
+        except models.PasswordResetToken.DoesNotExist():
+            raise Http404()
+
+        form = forms.ResetPasswordForm()
+        return render(request, 'account/reset-password.html', {'form': form})
+
+    def post(self, request, token):
+        form = forms.ResetPasswordForm(request.POST)
+        if form.is_valid():
+
+            try:
+                token_obj = models.PasswordResetToken.objects.get(token=token)
+                token_obj.user.set_password(form.cleaned_data['password1'])
+                return JsonResponse({'response': 'success', 'url': reverse('account_app:login')}, status=200)
+            except models.PasswordResetToken.DoesNotExist():
+                raise Http404()
+
+        return JsonResponse({'nonFieldError': form.non_field_errors() and form.non_field_errors()[0],
+                             'password1Error': form.errors.get('password1'),
+                             'password2Error': form.errors.get('password2')},
+                            status=400)
+
+
+

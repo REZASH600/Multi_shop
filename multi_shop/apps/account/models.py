@@ -110,9 +110,9 @@ class Otp(models.Model):
 
 class PasswordResetToken(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('user'))
-    token = models.CharField(verbose_name=_('token'), max_length=64, unique=True)
-    created_at = models.DateTimeField(verbose_name=_('created at'), auto_now=True)
-    expires_at = models.DateTimeField(verbose_name=_('expires at'))
+    token = models.CharField(_('token'), max_length=64, unique=True)
+    created_at = models.DateTimeField(_('created at'), auto_now=True)
+    expires_at = models.DateTimeField(_('expires at'))
 
     def is_valid(self):
         """
@@ -124,3 +124,7 @@ class PasswordResetToken(models.Model):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(minutes=15)
         super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = _('Password Reset Token')
+        verbose_name_plural = _('Password Reset Tokens')
