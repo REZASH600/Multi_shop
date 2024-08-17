@@ -8,4 +8,5 @@ urlpatterns = [
     path('register/', views.RegisterView.as_view(), name='register'),
     path('check/otp/', views.CheckOtpView.as_view(), name='check_otp'),
     path('resend/code/', views.ResendCodeView.as_view(), name='resend_code'),
+    path('forgot/password/', views.ForgotPasswordView.as_view(), name='forgot_password'),
 ]

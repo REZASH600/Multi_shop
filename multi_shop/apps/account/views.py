@@ -129,10 +129,9 @@ class CheckOtpView(View):
                     defaults={'token': new_token},
                     create_defaults={'token': new_token, user: user}
                 )
-                request.session['reset_password_token'] = new_token
+                request.session['token'] = new_token
                 otp.delete()
-                return JsonResponse({'response': 'Success', 'redirect_url': reverse('account_app:reset_password',
-                                                                                    kwargs={'token': new_token})})
+                return JsonResponse({'response': 'Success', 'redirect_url': '/'}, status=200)
 
             user, _ = models.User.objects.get_or_create(phone=otp.phone)
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
@@ -176,4 +175,43 @@ class ResendCodeView(View):
             return redirect('account_app:register')
 
 
+class ForgotPasswordView(View):
+    def get(self, request):
+        if self.request.user.is_authenticated:
+            return redirect('/')
 
+        form = forms.ForgotPasswordForm()
+        return render(request, 'account/forgot-password.html', {'form': form})
+
+    def post(self, request):
+        form = forms.ForgotPasswordForm(request.POST)
+        if form.is_valid():
+            phone_or_email = form.cleaned_data['phone_or_email']
+            new_token = str(uuid.uuid4())
+
+            if '@' in phone_or_email:
+                user = models.User.objects.get(email=phone_or_email)
+                models.PasswordResetToken.objects.update_or_create(
+                    user=user,
+                    defaults={'token': new_token},
+                    create_defaults={'user': user, 'token': new_token}
+                )
+                request.session['token'] = new_token
+                # send link to user email
+                return redirect('/')
+            else:
+                random_code = random.randint(10000, 99999)
+
+                # send code
+                print(random_code)
+                models.Otp.objects.update_or_create(
+                    phone=phone_or_email,
+                    defaults={'random_code': random_code, 'token': new_token},
+                    create_defaults={'phone': phone_or_email, 'random_code': random_code, 'token': new_token}
+                )
+
+                request.session['token'] = new_token
+                request.session['action'] = 'forgot_password'
+                return redirect('account_app:check_otp')
+
+        return render(request, 'account/forgot-password.html', {'form': form})

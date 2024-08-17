@@ -83,4 +83,23 @@ class CheckOtpForm(forms.Form):
         return code
 
 
+class ForgotPasswordForm(forms.Form):
+    phone_or_email = forms.CharField(max_length=255, widget=forms.TextInput({'placeholder': 'phone or email'}))
+
+    def clean(self):
+        phone_or_email = self.cleaned_data.get('phone_or_email')
+        if '@' in phone_or_email:
+            if phone_or_email[-10:] != '@gmail.com':
+                raise ValidationError('Please enter the correct email')
+
+            if not models.User.objects.filter(email=phone_or_email).exists():
+                raise ValidationError('email not found.')
+
+        else:
+            if len(phone_or_email) != 11 or not phone_or_email.isdigit():
+                raise ValidationError('Please enter the correct phone')
+
+            if not models.User.objects.filter(phone=phone_or_email).exists():
+                raise ValidationError('phone not found.')
+
 
