@@ -9,11 +9,11 @@ class EmailAuthentication(BaseBackend):
             if user and user.check_password(password):
                 return user
             return None
-        except models.User.DoesNotExist:
+        except :
             return None
 
     def get_user(self, user_id):
         try:
             return models.User.objects.get(id=user_id)
-        except models.User.DoesNotExist:
+        except :
             return None
