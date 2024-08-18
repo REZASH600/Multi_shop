@@ -1,0 +1,185 @@
+{% load static %}
+{% load widget_tweaks %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="{% static 'account/images/icons/favicon.ico' %}"/>
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/vendor/bootstrap/css/bootstrap.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'account/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'account/fonts/iconic/css/material-design-iconic-font.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/vendor/animate/animate.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/vendor/css-hamburgers/hamburgers.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/vendor/animsition/css/animsition.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/vendor/select2/select2.min.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/vendor/daterangepicker/daterangepicker.css' %}">
+    <!--===============================================================================================-->
+    <link rel="stylesheet" type="text/css" href="{% static 'account/css/util.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'account/css/main.css' %}">
+    <style>
+        .profile-image {
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            box-shadow: none;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+            opacity: 1;
+        }
+
+        .form-control:focus {
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+        }
+
+        .error-message {
+            color: black;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="limiter">
+    <div class="container-login100" style="background-image: url('{% static "account/images/bg-01.jpg" %}');">
+    <div class="wrap-login100">
+        <form class="login100-form validate-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="text-center p-b-34 p-t-27">
+                <img src="{{request.user.image.url}}" alt="Profile Image" class="profile-image">
+            </div>
+
+            {% for error in form.image.errors %}
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+
+            <!-- Image upload field -->
+            <div class="input-group">
+                <input type="file" name="image" class="form-control">
+            </div>
+
+            {% for error in form.first_name.errors %}
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            <!-- First Name -->
+            <div class="input-group">
+                {{ form.first_name | attr:"class:form-control" | append_attr:"placeholder:first name"  }}
+
+            </div>
+
+            {% for error in form.last_name.errors %}
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            <!-- Last Name -->
+            <div class="input-group">
+                {{ form.last_name | attr:"class:form-control" | append_attr:"placeholder:last name" }}
+
+            </div>
+
+            {% for error in form.email.errors %}
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            <!-- Email -->
+            <div class="input-group">
+                {{ form.email | attr:"class:form-control" |append_attr:"placeholder:email"}}
+            </div>
+
+            {% for error in form.old_password.errors %}
+
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            <!-- Old Password (required if user changes password) -->
+            <div class="input-group">
+                {{ form.old_password | attr:"class:form-control" }}
+            </div>
+
+            {% for error in form.new_password.errors %}
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            <!-- New Password -->
+            <div class="input-group">
+                {{ form.new_password | attr:"class:form-control" }}
+
+            </div>
+
+            {% for error in form.confirm_password.errors %}
+            <div class="error-message">{{ error }}</div>
+            {% endfor %}
+            <!-- Confirm Password -->
+            <div class="input-group">
+                {{ form.confirm_password | attr:"class:form-control" }}
+
+            </div>
+
+            {% for error in form.non_field_errors %}
+                 <p style="color:black; margin: 10px 0">{{error}}</p>
+            {% endfor %}
+
+            {% for message in messages %}
+                 <p style="color:black;margin: 10px 0">{{message}}</p>
+            {% endfor %}
+
+
+
+
+            <!-- Submit Button -->
+            <div class="container-login100-form-btn">
+                <button class="login100-form-btn" type="submit">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+
+    </div>
+</div>
+</div>
+
+<div id="dropDownSelect1"></div>
+
+<!--===============================================================================================-->
+<script src="{% static 'account/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'account/vendor/animsition/js/animsition.min.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'account/vendor/bootstrap/js/popper.js' %}"></script>
+<script src="{% static 'account/vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'account/vendor/select2/select2.min.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'account/vendor/daterangepicker/moment.min.js' %}"></script>
+<script src="{% static 'account/vendor/daterangepicker/daterangepicker.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'account/vendor/countdowntime/countdowntime.js' %}"></script>
+<!--===============================================================================================-->
+<script src="{% static 'account/js/main.js' %}"></script>
+
+</body>
+</html>

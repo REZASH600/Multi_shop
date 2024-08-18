@@ -10,4 +10,5 @@ urlpatterns = [
     path('resend/code/', views.ResendCodeView.as_view(), name='resend_code'),
     path('forgot/password/', views.ForgotPasswordView.as_view(), name='forgot_password'),
     path('reset/password/<token>/', views.ResetPasswordView.as_view(), name='reset_password'),
+    path('profile/', views.ProfileView.as_view(), name='profile'),
 ]

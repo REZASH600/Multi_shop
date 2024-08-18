@@ -3,7 +3,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from . import models
-from django.contrib.auth import authenticate
+from django.contrib.auth import login, authenticate
 
 
 class UserCreationForm(forms.ModelForm):
@@ -113,3 +113,59 @@ class ResetPasswordForm(forms.Form):
 
         if password1 and password2 != password1:
             raise ValidationError('passwords must match')
+
+
+class ProfileForm(forms.ModelForm):
+    old_password = forms.CharField(widget=forms.PasswordInput({'placeholder': 'old password'}), required=False)
+    new_password = forms.CharField(widget=forms.PasswordInput({'placeholder': 'new password'}), required=False)
+    confirm_password = forms.CharField(widget=forms.PasswordInput({'placeholder': 'confirm password'}), required=False)
+    image = forms.ImageField(widget=forms.FileInput(), required=False)
+
+    class Meta:
+        model = models.User
+        fields = ['first_name', 'last_name', 'email', 'image']
+
+    def clean(self):
+        new_password = self.cleaned_data.get('new_password')
+        confirm_password = self.cleaned_data.get('confirm_password')
+        old_password = self.cleaned_data.get('old_password')
+        if new_password and confirm_password and new_password != confirm_password:
+            raise ValidationError('passwords must match')
+
+        if new_password and new_password == confirm_password == old_password:
+            raise ValidationError('new password cannot be the same as the old password')
+
+        if old_password:
+            if not new_password and confirm_password:
+                raise ValidationError('please enter new password')
+            elif new_password and not confirm_password:
+                raise ValidationError('please enter confirm password')
+            elif not new_password and not confirm_password:
+                raise ValidationError('please enter new password and confirm password')
+
+        elif new_password or confirm_password:
+            raise ValidationError('please enter old password .')
+
+    def clean_old_password(self):
+        old_password = self.cleaned_data.get('old_password')
+        user = self.instance
+        if old_password and not user.check_password(old_password):
+            raise ValidationError('old password is incorrect.')
+        return old_password
+
+    def save(self, commit=True, request=None):
+        user = super().save(commit=False)
+
+        new_password = self.cleaned_data.get('new_password')
+        if new_password:
+            user.set_password(new_password)
+            if commit:
+                user.save()
+                if request:
+                    user_auth = authenticate(username=request.user.phone, password=new_password)
+                    login(request, user_auth)
+
+        elif commit:
+            user.save()
+
+        return user

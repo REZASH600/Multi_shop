@@ -12,6 +12,7 @@ from django.contrib import messages
 from . import models
 from django.conf import settings
 from django.http import JsonResponse, Http404
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class LoginView(View):
@@ -25,7 +26,7 @@ class LoginView(View):
         form = forms.LoginForm(request.POST)
         if form.is_valid():
             cd = form.cleaned_data
-            next_page = request.GET.get('next_page', '/')
+            next_page = request.GET.get('next', '/')
             user = authenticate(request, username=cd['username'], password=cd['password'])
             if user is not None:
                 login(request, user)
@@ -103,7 +104,7 @@ class CheckOtpView(View):
 
     def post(self, request):
         form = forms.CheckOtpForm(request.POST)
-        next_page = request.POST.get('next_page', '/')
+        next_page = request.POST.get('next', reverse('account_app:profile'))
         token = request.session.get('token')
 
         if form.is_valid():
@@ -255,4 +256,14 @@ class ResetPasswordView(View):
                             status=400)
 
 
+class ProfileView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = forms.ProfileForm(instance=request.user)
+        return render(request, 'account/profile.html', {'form': form})
 
+    def post(self, request):
+        form = forms.ProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save(request=request)
+            messages.success(request, 'saved successfully')
+        return render(request, 'account/profile.html', {'form': form})
