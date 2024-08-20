@@ -6,20 +6,20 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from . import validators
 
 
 class MyUserManager(BaseUserManager):
+
     def create_user(self, phone, email=None, password=None):
         """
         Creates and saves a User with the given phone, email and password.
         """
+
         if email:
             email = self.normalize_email(email)
 
-        user = self.model(
-            phone=phone,
-            email=self.normalize_email(email)
-        )
+        user = self.model(phone=phone, email=self.normalize_email(email))
 
         user.set_password(password)
         user.save(using=self._db)
@@ -41,17 +41,23 @@ class MyUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+
     phone = models.CharField(_("phone"), max_length=11, unique=True)
 
     email = models.EmailField(
         _("email address"),
         max_length=255,
         null=True,
-        blank=True
+        blank=True,
     )
-    first_name = models.CharField(_("first name"), max_length=100, null=True, blank=True)
+
+    first_name = models.CharField(
+        _("first name"), max_length=100, null=True, blank=True
+    )
     last_name = models.CharField(_("last name"), max_length=100, null=True, blank=True)
-    image = models.ImageField(_("image"), upload_to='user/images', default='user/images/images.jpeg')
+    image = models.ImageField(
+        _("image"), upload_to="user/images", default="user/images/images.jpeg"
+    )
     is_active = models.BooleanField(_("is admin"), default=True)
     is_admin = models.BooleanField(_("is active"), default=False)
     created_at = models.DateTimeField(_("created at"), auto_now_add=True)
@@ -92,27 +98,30 @@ class User(AbstractBaseUser):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+    def clean(self):
+        validators.validate_email(self.email, self.phone)
+
     class Meta:
-        verbose_name = _('User')
-        verbose_name_plural = _('Users')
+        verbose_name = _("User")
+        verbose_name_plural = _("Users")
 
 
 class Otp(models.Model):
-    phone = models.CharField(_('phone'), max_length=11)
-    random_code = models.CharField(_('random code'), max_length=5)
-    token = models.CharField(_('token'), max_length=255)
-    created_at = models.DateTimeField(_('created at'), auto_now=True)
+    phone = models.CharField(_("phone"), max_length=11)
+    random_code = models.CharField(_("random code"), max_length=5)
+    token = models.CharField(_("token"), max_length=255)
+    created_at = models.DateTimeField(_("created at"), auto_now=True)
 
     class Meta:
-        verbose_name = _('One Time Password')
-        verbose_name_plural = _('One Time Passwords')
+        verbose_name = _("One Time Password")
+        verbose_name_plural = _("One Time Passwords")
 
 
 class PasswordResetToken(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_('user'))
-    token = models.CharField(_('token'), max_length=64, unique=True)
-    created_at = models.DateTimeField(_('created at'), auto_now=True)
-    expires_at = models.DateTimeField(_('expires at'))
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name=_("user"))
+    token = models.CharField(_("token"), max_length=64, unique=True)
+    created_at = models.DateTimeField(_("created at"), auto_now=True)
+    expires_at = models.DateTimeField(_("expires at"))
 
     def is_valid(self):
         """
@@ -126,5 +135,5 @@ class PasswordResetToken(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        verbose_name = _('Password Reset Token')
-        verbose_name_plural = _('Password Reset Tokens')
+        verbose_name = _("Password Reset Token")
+        verbose_name_plural = _("Password Reset Tokens")
