@@ -19,7 +19,8 @@ urlpatterns = [
     path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     path('accounts/', include('apps.account.urls')),
 
-    path('', include('apps.account.api.urls'))
+    path('accounts/api/', include('apps.account.api.urls')),
+
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

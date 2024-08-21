@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "drf_spectacular",
     "widget_tweaks",
+    "rangefilter",
 
     # My App
     "apps.account.apps.AccountConfig",
