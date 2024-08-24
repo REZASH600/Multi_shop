@@ -20,7 +20,7 @@ urlpatterns = [
     path('accounts/', include('apps.account.urls')),
 
     path('accounts/api/', include('apps.account.api.urls')),
-
+    path('products/api/', include('apps.product.api.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
