@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from datetime import timedelta
 from pathlib import Path
 from os import path
@@ -21,7 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get("SECRET_KEY", 'django-insecure-@$t6djrqsbbgg5em3gzp#j!uudo5*dw0t#amdm(7q#7j)#9##_')
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY", "django-insecure-@$t6djrqsbbgg5em3gzp#j!uudo5*dw0t#amdm(7q#7j)#9##_"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,7 +44,6 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "widget_tweaks",
     "rangefilter",
-
     # My App
     "apps.account.apps.AccountConfig",
     "apps.product.apps.ProductConfig",
@@ -55,7 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "apps.account.middlewares.AutoLoginMiddleware"
+    "apps.account.middlewares.AutoLoginMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -63,7 +65,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -71,6 +73,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "context_processors.custom_context_processors.categories"
             ],
         },
     },
@@ -84,7 +87,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": os.environ.get("SQL_ENGINE", "django.db.backends.sqlite3"),
-        "NAME": os.environ.get("SQL_DATABASE", path.join(BASE_DIR, 'db.sqlite3')),
+        "NAME": os.environ.get("SQL_DATABASE", path.join(BASE_DIR, "db.sqlite3")),
         "USER": os.environ.get("SQL_USER", "user"),
         "PASSWORD": os.environ.get("SQL_PASSWORD", "password"),
         "HOST": os.environ.get("SQL_HOST", "localhost"),
@@ -122,46 +125,50 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = path.join(BASE_DIR.parent, 'volumes', 'static')
+STATIC_ROOT = path.join(BASE_DIR.parent, "volumes", "static")
+STATICFILES_DIRS = [path.join(BASE_DIR, "assets")]
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = path.join(BASE_DIR.parent, 'volumes', 'media')
+MEDIA_ROOT = path.join(BASE_DIR.parent, "volumes", "media")
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "account.User"
-AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.ModelBackend",
-                           'apps.account.authentication.EmailAuthentication']
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "apps.account.authentication.EmailAuthentication",
+]
 SESSION_SAVE_EVERY_REQUEST = True
 PASSWORD_RESET_TIMEOUT = 15
 # Celery settings
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL', 'amqp://guest:guest@rabbitmq:5672/')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+CELERY_BROKER_URL = os.environ.get(
+    "CELERY_BROKER_URL", "amqp://guest:guest@rabbitmq:5672/"
+)
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND", "redis://redis:6379/0")
 
 # DRF Settings
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 10
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
+    "PAGE_SIZE": 10,
 }
 
 # JWT Settings
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=10),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=2)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
 }
 
 # Spectacular Settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Multi Shop API',
-    'DESCRIPTION': 'Your project description',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True,
+    "TITLE": "Multi Shop API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
 }

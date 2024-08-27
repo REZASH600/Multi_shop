@@ -1,0 +1,12 @@
+{% for category in category.subs.all %}
+  {% if category.subs.all %}
+    <div class="nav-item dropdown dropright">
+      <a href="#" class="nav-link dropdown-toggle"  data-toggle="dropdown">{{ category.name }} <i class="fa fa-angle-right float-right mt-1"></i></a>
+      <div class="dropdown-menu position-absolute rounded-0 border-0 m-0">
+        {% include "includes/sub-categories.html" %}
+      </div>
+    </div>
+  {% else %}
+    <a href="" class="nav-item nav-link">{{ category.name }}</a>
+  {% endif %}
+{% endfor %}
