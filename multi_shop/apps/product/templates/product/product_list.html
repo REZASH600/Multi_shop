@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load tags %}
+
+{% block title %}shop{% endblock %}
+
+{% block content %}
+
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <div class="col-12">
+                <nav class="breadcrumb bg-light mb-30">
+                    <a class="breadcrumb-item text-dark" href="#">Home</a>
+                    <a class="breadcrumb-item text-dark" href="{% url 'product_app:list' %}">Shop</a>
+                    <span class="breadcrumb-item active">Shop List</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Breadcrumb End -->
+
+
+    <!-- Shop Start -->
+    <div class="container-fluid">
+        <div class="row px-xl-5">
+            <!-- Shop Sidebar Start -->
+            <div class="col-lg-3 col-md-4">
+                <!-- Price Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by price</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form id="form1">
+                        <div class=" d-flex align-items-center justify-content-between mb-3">
+                            <label for="min_price">Min</label>
+                            <input type="number" id="min_price" name="min_price"{% if request.GET.min_price %}value="{{ request.GET.min_price }}"{% endif %}>
+
+                        </div>
+                        <div class=" d-flex align-items-center justify-content-between mb-3">
+                            <label for="max_price">Max</label>
+                            <input type="number" id="max_price" name="max_price"
+                                   {% if request.GET.max_price %}value="{{ request.GET.max_price }}"{% endif %}>
+
+                        </div>
+                    </form>
+                </div>
+                <!-- Price End -->
+                
+                <!-- Color Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by color</span></h5>
+                <div class="bg-light p-4 mb-30">
+    
+                    <form id='form2'>
+                       {% for color in colors %}
+                       <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                            <input type="checkbox" class="custom-control-input" id="color-{{color.id}}" name='color' value='{{color.name}}' 
+                            {% if color.name in selected_colors %} checked {% endif %}>
+                            <label class="custom-control-label" for="color-{{color.id}}">{{color.name}}</label>
+                            <span class="badge border font-weight-normal">{{color.product_color.all.count}}</span>
+                        </div>
+                         
+                       {% endfor %}
+                   
+                    </form>
+                </div>
+                <!-- Color End -->
+
+                <!-- Size Start -->
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Filter by size</span></h5>
+                <div class="bg-light p-4 mb-30">
+                    <form id='form3'>
+                        {% for size in sizes %}
+                            <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                                <input type="checkbox" class="custom-control-input" id="size-{{size.id}}" name='size' value='{{size.name}}'
+                                {% if size.name in selected_sizes %} checked {% endif %}>
+                                <label class="custom-control-label" for="size-{{size.id}}">{{size.name}}</label>
+                                <span class="badge border font-weight-normal">{{size.product_size.all.count}}</span>
+                            </div>
+                        {% endfor %}
+                     
+                     
+                      
+                    </form>
+                </div>
+
+                <button class='btn btn-primary' style='width: 100%;' id='submitAll'>submit</button>
+                <a href="{% url 'product_app:list' %}" class='btn btn-primary' style='width: 100%;margin-top: 5px;' >clear</a>
+                <!-- Size End -->
+            </div>
+            <!-- Shop Sidebar End -->
+
+
+            <!-- Shop Product Start -->
+            <div class="col-lg-9 col-md-8">
+                <div class="row pb-3">
+                    <div class="col-12 pb-1">
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <div>
+                                <button class="btn btn-sm btn-light"><i class="fa fa-th-large"></i></button>
+                                <button class="btn btn-sm btn-light ml-2"><i class="fa fa-bars"></i></button>
+                            </div>
+                            <div class="ml-2">
+        
+                                <div class="btn-group ml-2">
+                                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">Showing</button>
+                                    <div class="dropdown-menu dropdown-menu-right">
+                                        <a class="dropdown-item" href="{% update_url_param 10 'per_page' request.GET.urlencode %}">10</a>
+                                        <a class="dropdown-item" href="{% update_url_param 20 'per_page' request.GET.urlencode %}">20</a>
+                                        <a class="dropdown-item" href="{% update_url_param 30 'per_page' request.GET.urlencode %}">30</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                    {% for product in product_list%}
+                        <div class="col-lg-4 col-md-6 col-sm-6 pb-1 my-product">
+                            <div class="product-item bg-light mb-4">
+                                <div class="product-img position-relative overflow-hidden">
+                                    <img class="img-fluid w-100" src="{{product.image_product.all.first.image.url}}" alt="">
+                                    <div class="product-action">
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-shopping-cart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square btn-like" href=""><i class="far fa-heart"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-sync-alt"></i></a>
+                                        <a class="btn btn-outline-dark btn-square" href=""><i class="fa fa-search"></i></a>
+                                    </div>
+                                </div>
+                                <div class="text-center py-4">
+                                    <a class="h6 text-decoration-none text-truncate" href="{% url 'product_app:detail' product.slug %}">{{product.name }}</a>
+                                    <div class="d-flex align-items-center justify-content-center mt-2">
+                                        {% if product.price == product.get_best_discounted_price %}
+                           
+                                                <h5>${{product.price}}</h5><h6 class="text-muted ml-2"></h6>
+                                        {% else %}
+                    
+                                                <h5>${{product.get_best_discounted_price}}</h5><h6 class="text-muted ml-2"><del>${{product.price}}</del></h6>
+                                        {% endif %}
+                                    </div>
+                                
+                                </div>
+                            </div>
+                        </div>
+                    
+                    {% endfor %}
+
+                    <div id='before-products'></div>
+                 
+                    {% if page_obj.has_other_pages %}
+                        <div class="col-12">
+                            <nav id='pagination'>
+                                <ul class="pagination justify-content-center">
+                                    {% if page_obj.has_previous %}
+                                        <li class="page-item"><a class="page-link"
+                                                                href="{% update_url_param page_obj.previous_page_number 'page' request.GET.urlencode %}">Previous</a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for i in page_obj.paginator.page_range %}
+                                        {% if i == page_obj.number %}
+                                            <li class="page-item active"><a class="page-link"
+                                                                            href="{% update_url_param i 'page' request.GET.urlencode %}">{{ i }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item"><a class="page-link"
+                                                                    href="{% update_url_param i 'page' request.GET.urlencode %}">{{ i }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if page_obj.has_next %}
+                                        <li class="page-item"><a class="page-link"
+                                                                href="{% update_url_param page_obj.next_page_number 'page' request.GET.urlencode %}">Next</a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Shop Product End -->
+        </div>
+    </div>
+    <!-- Shop End -->
+
+
+{% endblock  %}
+
+
+
+{% block js %}
+<script src="{% static 'product/js/productList.js' %}"></script>
+
+{% endblock %}
+
+
