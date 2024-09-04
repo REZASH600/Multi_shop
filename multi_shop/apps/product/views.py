@@ -3,9 +3,9 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from . import models
 from . import forms
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from . import modules
-import json
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class ProductDetailView(DetailView):
@@ -131,3 +131,33 @@ class ProductListView(ListView):
             self.paginate_by = int(per_page)
 
         return self.paginate_by
+
+
+class LikeView(ListView):
+
+    def get(self, request, product_id):
+
+        if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
+            if not self.request.user.is_authenticated:
+                return JsonResponse({'url':f"{reverse('account_app:login')}?next={request.GET.get('current_url')}"})
+
+            try:
+                obj_like = models.Like.objects.get(
+                    user=self.request.user, product_id=product_id
+                )
+                obj_like.delete()
+                is_liked = False
+
+            except:
+                models.Like.objects.create(
+                    user=self.request.user, product_id=product_id
+                )
+                is_liked = True
+
+            finally:
+                number_like = models.Like.objects.filter(user=self.request.user).count()
+                return JsonResponse(
+                    {"isLiked": is_liked, "numberLike": number_like}, status=200
+                )
+
+        raise Http404()
