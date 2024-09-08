@@ -82,7 +82,9 @@ class ProductListView(ListView):
                     "price": product.price,
                     "bestDiscountedPrice": product.get_best_discounted_price(),
                     "isLiked": is_liked,
-                    "urlLike": "#",
+                    "urlLike": reverse(
+                        "product_app:like", kwargs={"product_id": product.id}
+                    ),
                 }
 
                 saved_list.append(product_json)
@@ -139,7 +141,11 @@ class LikeView(ListView):
 
         if self.request.headers.get("x-requested-with") == "XMLHttpRequest":
             if not self.request.user.is_authenticated:
-                return JsonResponse({'url':f"{reverse('account_app:login')}?next={request.GET.get('current_url')}"})
+                return JsonResponse(
+                    {
+                        "url": f"{reverse('account_app:login')}?next={request.GET.get('current_url')}"
+                    }
+                )
 
             try:
                 obj_like = models.Like.objects.get(
