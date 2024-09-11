@@ -57,11 +57,11 @@
         {% if object.color.all %}
           <div class="d-flex mb-3">
             <strong class="text-dark mr-3">Sizes:</strong>
-            <form method="post">
+            <form method="post" id='form-size'>
               {% csrf_token %}
               {% for size in object.size.all %}
                 <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" class="custom-control-input" id="size-{{size.id}}" name="size" />
+                  <input type="radio" class="custom-control-input" id="size-{{size.id}}" name="size" value="{{size.name}}" />
                   <label class="custom-control-label" for="size-{{size.id}}">{{size.name}}</label>
                 </div>
                 
@@ -72,10 +72,11 @@
         {% if object.size.all %}
           <div class="d-flex mb-4">
             <strong class="text-dark mr-3">Colors:</strong>
-            <form>
+            <form method="post" id='form-color'>
+              {% csrf_token %}
               {% for color in object.color.all %}
                 <div class="custom-control custom-radio custom-control-inline">
-                  <input type="radio" class="custom-control-input" id="color-{{color.id}}" name="color" />
+                  <input type="radio" class="custom-control-input" id="color-{{color.id}}" name="color" value='{{color.name}}' />
                   <label class="custom-control-label" for="color-{{color.id}}">{{color.name}}</label>
                 </div>
               {% endfor %}

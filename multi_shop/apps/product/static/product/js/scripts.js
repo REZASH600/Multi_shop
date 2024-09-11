@@ -2,10 +2,9 @@
 $(document).ready(function () {
     var maxItems = $('#plusButton').data('max');
     $('#minusButton').prop('disabled', true);
-    $('#currentCount').val(1);
     $('#currentCount').on('input', function () {
         var currentCount = parseInt($('#currentCount').val());
-       
+
         $('#addCart').show();
         $('#message-number-items').text('');
 
@@ -30,13 +29,13 @@ $(document).ready(function () {
 
         }
 
-     
+
 
     });
 
     $('#plusButton').click(function () {
         var currentCount = parseInt($('#currentCount').val());
-        if (!currentCount){
+        if (!currentCount) {
             currentCount = 2
         }
         if (currentCount < maxItems) {
@@ -116,5 +115,34 @@ $(document).ready(function () {
 
     })
 
+    $('#addCart').on('click', function () {
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        var data = $('#form-size, #form-color').serialize()
+        var currentCount = parseInt($('#currentCount').val());
+        var urlPath = window.location.pathname;
+        var slug = urlPath.split('/').filter(Boolean).pop();
+        var postData = `${data}&quantity=${currentCount}&slug=${slug}`
+        console.log(data)
+        $.ajax({
+            type: "POST",
+            data: postData,
+
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('X-CSRFToken', csrftoken)
+            },
+            url: "/carts/list/",
+
+            success: function (response) {
+                window.location.href = response.url;
+
+
+            },
+            error: function (xhr) {
+                console.log(xhr)
+
+            }
+        })
+
+    })
 
 });
