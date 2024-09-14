@@ -7,6 +7,6 @@
       </div>
     </div>
   {% else %}
-    <a href="" class="nav-item nav-link">{{ category.name }}</a>
+    <a href="{% url 'product_app:list' %}?category={{category.slug}}" class="nav-item nav-link">{{ category.name }}</a>
   {% endif %}
 {% endfor %}
