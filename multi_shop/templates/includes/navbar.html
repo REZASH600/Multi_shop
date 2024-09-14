@@ -51,7 +51,7 @@
                             <a href="#" class="nav-link dropdown-toggle {% if request.resolver_match.url_name == 'list_cart' or request.resolver_match.url_name == 'checkout' %}active{% endif %}" data-toggle="dropdown">Pages <i class="fa fa-angle-down mt-1"></i></a>
                             <div class="dropdown-menu bg-primary rounded-0 border-0 m-0">
                                 <a href="{% url 'cart_app:list_cart' %}" class="dropdown-item {% if request.resolver_match.url_name == 'list_cart' %} active {% endif %}">Shopping Cart</a>
-                                <a href="checkout.html" class="dropdown-item">Checkout</a>
+                                <a href="{% url 'order_app:checkout' %}" class="dropdown-item {% if request.resolver_match.url_name == 'checkout' %} active {% endif %}">Checkout</a>
                             </div>
                         </div>
                         <a href="{% url 'contact_app:contact' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'contact' %} active {% endif %}">Contact</a>
