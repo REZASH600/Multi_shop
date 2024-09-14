@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}
+  Add Address
+{% endblock %}
+
+{% block content %}
+  <!-- add Address Start -->
+  <div class="container-fluid">
+    <div class="mr-auto">
+      <div class="">
+        <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
+        <div class="bg-light p-30 mb-5">
+          <div id="success"></div>
+          <form  id="form" method="post" action="{% url 'order_app:checkout' %}{% if request.GET.next%}?next={{request.GET.next}}{% endif %}" data-get-cities-url="{% url 'order_app:get_cities' %}">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label>Recipient Name*</label>
+                {{ form.recipient_name|attr:'class:form-control'|attr:'id:recipient-name' }}
+              </div>
+              <div class="col-md-6 form-group">
+                <label>Street*</label>
+                {{ form.street|attr:'class:form-control'|attr:'id:street' }}
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>Postal Code*</label>
+                {{ form.postal_code|attr:'class:form-control' }}
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>Bulding Number*</label>
+                {{ form.building_number|attr:'class:form-control' }}
+              </div>
+              <div class="col-md-6 form-group">
+                <label>Province*</label>
+                {{ form.province|attr:'class:custom-select' }}
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>City*</label>
+                {{ form.city|attr:'class:custom-select' }}
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>Unit</label>
+                {{ form.unit|attr:'class:form-control' }}
+              </div>
+
+              <div class="col-md-6 form-group">
+                <label>Full Address</label>
+                {{ form.full_address|attr:'class:form-control' }}
+                <p class="help-block text-danger"></p>
+              </div>
+
+              <div style="text-align: center;width:100%">
+                <button class="btn btn-primary py-2 px-4" type="submit" id="submit-form">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+
