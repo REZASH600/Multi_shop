@@ -1,6 +1,8 @@
+from typing import Any
 from django.shortcuts import render, get_object_or_404, reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+from django.views.generic import TemplateView
 from . import models
 from . import forms
 from django.http import JsonResponse, Http404
@@ -167,3 +169,25 @@ class LikeView(ListView):
                 )
 
         raise Http404()
+
+
+class HomeView(TemplateView):
+
+    template_name = "product/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["offers"] = [
+            offer
+            for offer in models.Offer.objects.filter(is_publish=True)
+            if offer.is_active()
+        ][:10]
+
+
+        context["categories"] = models.Category.objects.filter(is_publish=True)[:12]
+        context['recent_products'] = models.Product.objects.filter(is_publish=True)[:12]
+        context["brands"] = models.Brand.objects.filter(is_publish=True)[:12]
+        
+
+        return context

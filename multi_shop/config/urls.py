@@ -12,18 +12,18 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularAPIView,
 )
+from apps.product.views import HomeView
 
 urlpatterns = [
+    path("", HomeView.as_view(), name="home"),
     path("admin/", admin.site.urls),
     path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    
     path("products/", include("apps.product.urls")),
     path("accounts/", include("apps.account.urls")),
     path("carts/", include("apps.cart.urls")),
     path("contacts/", include("apps.contact.urls")),
     path("orders/", include("apps.order.urls")),
-
     path("accounts/api/", include("apps.account.api.urls")),
     path("products/api/", include("apps.product.api.urls")),
     path("orders/api/", include("apps.order.api.urls")),
