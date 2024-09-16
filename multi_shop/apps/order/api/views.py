@@ -28,3 +28,18 @@ class AddressView(ModelViewSet):
     parser_classes = (MultiPartParser,)
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminUser,)
+
+
+class OrderView(ModelViewSet):
+    serializer_class = serializers.OrderSerializers
+    queryset = models.Order.objects.all()
+    parser_classes = (MultiPartParser,)
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminUser,)
+
+class OrderItemView(ModelViewSet):
+    serializer_class = serializers.OrderItemSerializers
+    queryset = models.OrderItem.objects.all()
+    parser_classes = (MultiPartParser,)
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminUser,)    

@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.utils.text import Truncator
-
+from django.core.exceptions import ValidationError
 from apps.account.models import User
 
 
@@ -320,3 +320,63 @@ class Comment(models.Model):
         ordering = ("-created_at", "-updated_at")
         verbose_name = _("Comment")
         verbose_name_plural = _("Comments")
+
+
+class CouponCode(models.Model):
+    name = models.CharField(_("name"), max_length=50, unique=True)
+    percent = models.FloatField(_("percent"))
+    start_time = models.DateTimeField(_("start time"))
+    end_time = models.DateTimeField(_("end time"))
+    quantity = models.PositiveBigIntegerField(_("quantity"), default=1)
+    minimum_purchase = models.DecimalField(
+        _("minimum purchase"), max_digits=12, decimal_places=2
+    )
+    is_active = models.BooleanField(_("is active"), default=True)
+
+    user = models.ManyToManyField(
+        User, related_name="coupon_code", verbose_name=_("user")
+    )
+
+    product = models.ManyToManyField(
+        Product, related_name="coupon_code", verbose_name=_("product")
+    )
+
+    created_at = models.DateTimeField(_("created at"), auto_now_add=True)
+    updated_at = models.DateTimeField(_("updated at"), auto_now=True)
+
+    def is_valid(self, order):
+
+        now = timezone.now()
+        if not (self.start_time <= now <= self.end_time):
+            raise ValidationError(
+                "This discount is either not yet valid or has expired."
+            )
+
+        if not self.is_active:
+            raise ValidationError("This discount is inactive.")
+
+        if self.quantity == 0:
+            raise ValidationError("This discount has been fully used.")
+
+        if order.total_price < self.minimum_purchase:
+            raise ValidationError(
+                f"The minimum purchase required for this discount is {self.minimum_purchase}."
+            )
+
+        if order.is_discount:
+            raise ValidationError("A discount has already been applied to this order.")
+
+        return True
+
+    def apply_discount(self, order):
+        total_price = float(order.total_price)
+        return total_price - total_price * (1 - self.percent / 100)
+    
+
+    def __str__(self):
+        return f"{self.name} - {self.percent}%"
+
+    class Meta:
+        ordering = ("-created_at", "-updated_at")
+        verbose_name = _("Coupon Code")
+        verbose_name_plural = _("Coupon Codes")

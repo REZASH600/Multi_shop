@@ -19,3 +19,22 @@ class AddressSerializers(serializers.ModelSerializer):
     class Meta:
         model = models.Address
         fields = "__all__"
+
+
+
+
+class OrderSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.Order
+        fields = "__all__"
+
+
+
+
+class OrderItemSerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = models.OrderItem
+        fields = "__all__"
+

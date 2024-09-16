@@ -13,4 +13,5 @@ router.register(r'additional_information', views.AdditionalInformationView, base
 router.register(r'question_answer', views.QuestionAnswerView, basename='question_answer')
 router.register(r'like', views.LikeView, basename='like')
 router.register(r'comment', views.CommentView, basename='comment')
+router.register(r'coupon_code', views.CommentView, basename='coupon_code')
 urlpatterns = router.urls

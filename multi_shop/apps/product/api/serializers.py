@@ -76,3 +76,10 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Comment
         fields = "__all__"
+
+
+
+class CouponCodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CouponCode
+        fields = "__all__"

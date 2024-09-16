@@ -93,3 +93,11 @@ class CommentView(ModelViewSet):
     authentication_classes = (JWTAuthentication,)
     permission_classes = (IsAdminUser,)
 
+
+
+class CouponCodeView(ModelViewSet):
+    serializer_class = serializers.CouponCodeSerializer
+    queryset = models.CouponCode.objects.all()
+    parser_classes = (MultiPartParser,)
+    authentication_classes = (JWTAuthentication,)
+    permission_classes = (IsAdminUser,)
