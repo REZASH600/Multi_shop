@@ -79,7 +79,7 @@
                         <h5>Total</h5>
                         <h5 id='total-cart'>${{cart.total_price_cart}}</h5>
                     </div>
-                    <button class="btn btn-block btn-primary font-weight-bold my-3 py-3" id='order-button'>Proceed To Checkout</button>
+                    <a href="{% url 'order_app:order_creation' %}" class="btn btn-block btn-primary font-weight-bold my-3 py-3" id='order-button'>Proceed To Pay</a>
                 </div>
             </div>
         </div>

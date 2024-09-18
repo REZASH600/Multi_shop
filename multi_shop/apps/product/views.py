@@ -2,12 +2,14 @@ from typing import Any
 from django.shortcuts import render, get_object_or_404, reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from . import models
 from . import forms
 from django.http import JsonResponse, Http404
 from . import modules
 from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.order.models import Order
+from django.core.exceptions import ValidationError
 
 
 class ProductDetailView(DetailView):
@@ -184,10 +186,33 @@ class HomeView(TemplateView):
             if offer.is_active()
         ][:10]
 
-
         context["categories"] = models.Category.objects.filter(is_publish=True)[:12]
-        context['recent_products'] = models.Product.objects.filter(is_publish=True)[:12]
+        context["recent_products"] = models.Product.objects.filter(is_publish=True)[:12]
         context["brands"] = models.Brand.objects.filter(is_publish=True)[:12]
-        
 
         return context
+
+
+class CouponCodeView(LoginRequiredMixin, View):
+    def post(self, request, order_id):
+        unique_name = self.request.POST.get("unique_name")
+        try:
+            coupon_code = models.CouponCode.objects.get(name=unique_name)
+            order = Order.objects.get(user=self.request.user, id=order_id)
+            coupon_code.is_valid(order)
+            order.total_price = coupon_code.apply_discount(order)
+            order.is_discount = True
+            order.save()
+            coupon_code.quantity -= 1
+            return JsonResponse({"total_price": order.total_price}, status=200)
+        
+        except Order.DoesNotExist:
+            return JsonResponse(
+                {"error": "order not found.", "href": reverse("cart_app:cart_list")}, status=404
+            )
+        except models.CouponCode.DoesNotExist:
+            return JsonResponse({"error": "There is no discount code with this name."},status=404)
+
+        except ValidationError as e:
+
+            return JsonResponse({"error": list(e)[0]}, status=404)
